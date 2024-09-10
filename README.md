@@ -1,20 +1,26 @@
 # Microservice-Application
  Full-Stack Microservice Application with MongoDB and External API Integration
 
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your system:
+- Node.js (version 14.0.0 or later)
+- npm (usually comes with Node.js)
+
 # Backend Development Setup
 
 This is the Backend Development, part of the Microservice-Application project. It handles user registration, authentication, and CRUD operations.
 
-## Project Location
+## Clone the repository:
+   ```
+   git clone https://github.com/00Leiner/Microservice-Application/backend/user
+   cd app
 
-This service is located at: 
-```
-Microservice-Application/backend/user
+   or 
 
-or
-
-Microservice-Application/backend/userData/
-```
+   git clone https://github.com/00Leiner/Microservice-Application/backend/userData
+   cd userData
+   ```
 
 ## Environment Setup
 
@@ -93,3 +99,83 @@ Follow these steps to set up your development environment for the Backend Micros
 - Review and update the API endpoints in `src/routes/userRoute.ts` as needed.
 - Check the `src/controllers/userController.ts` file to understand and modify user-related operations.
 - Examine `src/models/userModel.ts` for the user data schema.
+
+# Frontend Documentation Setup
+
+This is the Frontend Development, part of the Microservice-Application project. This project is a React TypeScript application provide a basic user interface to interact with the backend microservices.
+
+## Clone the repository:
+   ```
+   git clone https://github.com/00Leiner/Microservice-Application/frontend/app
+   cd app
+   ```
+
+## Environment Setup
+
+Follow these steps to set up your development environment for the Frontend:
+
+1. **Navigate to the Frontend Directory**
+
+   Open a terminal and navigate to the frontend directory:
+
+   ```
+   cd my-startup
+   ```
+
+2. **Install Dependencies**
+
+   Install the required npm packages:
+
+   ```
+   npm install
+   ```
+
+3. **Verify TypeScript Configuration**
+
+   Ensure that the `tsconfig.json` file in the project directory is correctly configured for your environment.
+
+4. **Build the Project**
+
+   Compile the TypeScript code:
+
+   ```
+   npm run build
+   ```
+
+5. **Run the Frontend Application**
+
+   Start the frontend application:
+
+   ```
+   npm start
+   ```
+
+   This will run the app in development mode. Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+6. **Verify the Application**
+
+   The frontend application should now be running on `http://localhost:3000`. You can verify this by opening the URL in your web browser.
+
+## Project Structure
+
+- `src/index.tsx`: The entry point of the application
+- `src/App.tsx`: The main component that sets up routing
+- `src/components/`: Contains React components (AuthPage, Dashboard)
+- `src/context/`: Contains the AuthContext for state management
+- `src/index.css`: Global styles for the application
+
+## Available Scripts
+
+In the project directory, you can run:
+
+- `npm start`: Runs the app in development mode
+- `npm test`: Launches the test runner
+- `npm run build`: Builds the app for production
+- `npm run eject`: Ejects from Create React App (one-way operation)
+
+## Next Steps
+
+- Explore the `src` directory to understand the structure and functionality of the frontend application.
+- Review and update the components in `src/components/` as needed.
+- Check the `src/context/AuthContext.tsx` file to understand and modify authentication-related operations.
+- Examine `src/App.tsx` for the main application structure and routing.
