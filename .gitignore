@@ -1,3 +1,2 @@
 # Environment variables
-backend/user/.env
-backend/userData/.env
+**/.env
