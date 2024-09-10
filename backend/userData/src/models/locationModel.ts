@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define the interface for a single location
-interface ILocation {
+export interface ILocation {
   _id?: string;
   name: string;
   latitude: number;
@@ -17,12 +17,11 @@ export interface IUserLocation extends Document {
 // Create the schema for a single location
 const locationSchema: Schema = new Schema<ILocation>(
   {
-    _id: { type: String },
     name: { type: String, required: true },
     latitude: { type: Number, required: true },
     longitude: { type: Number, required: true },
   },
-  { timestamps: true }
+  { timestamps: true, _id: true }
 );
 
 // Create the schema for the UserLocation model

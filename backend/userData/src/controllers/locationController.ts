@@ -1,18 +1,12 @@
 import { Request, Response } from 'express';
 import Logging from '../utils/Logging';
-import UserLocation from '../models/locationModel';
-
-// Extend the Request interface to include the user property
-interface AuthenticatedRequest extends Request {
-  user?: {
-    id: string;
-  };
-}
+import UserLocation, { ILocation, IUserLocation } from '../models/locationModel';
+import mongoose from 'mongoose';
 
 export const locationController = {
   // Get saved locations for a user
-  async getSavedLocations(req: AuthenticatedRequest, res: Response) {
-    const userId = req.user?.id;
+  async getSavedLocations(req: Request, res: Response) {
+    const userId = req.params.userId;
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -46,8 +40,8 @@ export const locationController = {
   },
 
   // Add a saved location for a user
-  async addSavedLocation(req: AuthenticatedRequest, res: Response) {
-    const userId = req.user?.id;
+  async addSavedLocation(req: Request, res: Response) {
+    const userId = req.params.userId;
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -69,11 +63,15 @@ export const locationController = {
   },
 
   // Remove a saved location for a user
-  async removeSavedLocation(req: AuthenticatedRequest, res: Response) {
-    const userId = req.user?.id;
-    const locationId = req.params.locationId;
+  async removeSavedLocation(req: Request, res: Response) {
+    const userId = req.params.userId;
+    let locationId = req.params.locationId;
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
+    }
+    // Convert locationId to string if it's a valid ObjectId
+    if (locationId.startsWith('new ObjectId(')) {
+      locationId = locationId.slice(13, -2); // Remove 'new ObjectId(' and the closing ')'
     }
 
     try {
@@ -96,11 +94,15 @@ export const locationController = {
   },
 
   // Get a specific saved location by ID for a user
-  async getSavedLocationById(req: AuthenticatedRequest, res: Response) {
-    const userId = req.user?.id;
-    const locationId = req.params.locationId;
+  async getSavedLocationById(req: Request, res: Response) {
+    const userId = req.params.userId;
+    let locationId = req.params.locationId;
     if (!userId) {
       return res.status(401).json({ message: 'Unauthorized' });
+    }
+    // Convert locationId to string if it's a valid ObjectId
+    if (locationId.startsWith('new ObjectId(')) {
+      locationId = locationId.slice(13, -2); // Remove 'new ObjectId(' and the closing ')'
     }
 
     try {
@@ -111,6 +113,7 @@ export const locationController = {
       }
 
       const location = userLocation.savedLocations.find(loc => loc._id?.toString() === locationId);
+
       if (!location) {
         Logging.warn(`Saved location ${locationId} not found for user: ${userId}`);
         return res.status(404).json({ message: 'Saved location not found' });
@@ -126,19 +129,37 @@ export const locationController = {
   },
 
   // Update a saved location for a user
-  async updateSavedLocation(req: AuthenticatedRequest, res: Response) {
-    const userId = req.user?.id;
-    const locationId = req.params.locationId;
-    const updatedLocation = req.body;
-    if (!userId) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-
+  async updateSavedLocation(req: Request, res: Response) {
     try {
+      const userId = req.params.userId;
+      let locationId = req.params.locationId;
+      const { name, latitude, longitude } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      // Extract the hexadecimal string from the ObjectId representation if necessary
+      if (locationId.startsWith('new ObjectId(')) {
+        locationId = locationId.slice(13, -2); // Remove 'new ObjectId(' and the closing ')'
+      }
+
+      const updateFields: Partial<ILocation> = {};
+      if (name !== undefined) updateFields.name = name;
+      if (latitude !== undefined) updateFields.latitude = latitude;
+      if (longitude !== undefined) updateFields.longitude = longitude;
+
       const result = await UserLocation.findOneAndUpdate(
-        { userId, 'savedLocations._id': locationId },
-        { $set: { 'savedLocations.$': updatedLocation } },
-        { new: true }
+        { 
+          userId, 
+          'savedLocations._id': locationId
+        },
+        { 
+          $set: Object.fromEntries(
+            Object.entries(updateFields).map(([key, value]) => [`savedLocations.$.${key}`, value])
+          )
+        },
+        { new: true, runValidators: true }
       );
 
       if (!result) {
@@ -146,19 +167,27 @@ export const locationController = {
         return res.status(404).json({ message: 'User or saved location not found' });
       }
 
-      const updatedLocationInResult = result.savedLocations.find(loc => loc._id?.toString() === locationId);
+      const updatedLocation = result.savedLocations.find(loc => 
+        loc._id?.toString() === locationId
+      );
       
-      if (!updatedLocationInResult) {
+      if (!updatedLocation) {
         Logging.warn(`Updated location ${locationId} not found in result for user: ${userId}`);
         return res.status(404).json({ message: 'Updated location not found in result' });
       }
 
       Logging.info(`Updated saved location ${locationId} for user: ${userId}`);
-      res.status(200).json({ savedLocation: updatedLocationInResult });
+      res.json({ savedLocation: updatedLocation });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-      Logging.error(`Error updating saved location: ${errorMessage}`);
-      res.status(500).json({ message: 'Error updating saved location', error: errorMessage });
+      if (error instanceof mongoose.Error.ValidationError) {
+        Logging.error(`Validation error updating saved location: ${error.message}`);
+        return res.status(400).json({ message: 'Invalid input', error: error.message });
+      } else if (error instanceof Error) {
+        Logging.error(`Error updating saved location: ${error.message}`);
+      } else {
+        Logging.error(`Unknown error updating saved location`);
+      }
+      res.status(500).json({ message: 'Error updating saved location', error });
     }
   }
 };

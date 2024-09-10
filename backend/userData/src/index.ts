@@ -24,7 +24,7 @@ const startServer = () => {
 
 	// Routes
 	Logging.info('Setting up routes...');
-	app.use('/userData/locations', authMiddleware, locationRoutes);
+	app.use('/userData/locations', authMiddleware, locationRoutes);  //app.use('/userData/locations', authMiddleware, locationRoutes);
 
 	// Error handling middleware
 	app.use(errorHandler);

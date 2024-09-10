@@ -5,7 +5,6 @@ import { AppError } from './errorHandler';
 
 const locationSchema = Joi.object({
   name: Joi.string().required(),
-  address: Joi.string().required(),
   latitude: Joi.number().min(-90).max(90).required(),
   longitude: Joi.number().min(-180).max(180).required(),
 });
