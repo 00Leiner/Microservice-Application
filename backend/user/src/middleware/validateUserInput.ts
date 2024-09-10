@@ -6,7 +6,7 @@ import { User } from '../models/userModel';
 const userSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+  password: Joi.string().min(8).max(30).required(),
   firstName: Joi.string().allow(''),
   lastName: Joi.string().allow(''),
   isVerified: Joi.boolean(),
@@ -22,7 +22,7 @@ export const validateUserInput = async (req: Request, res: Response, next: NextF
     
     if (error) {
       const errorMessage = error.details.map(detail => detail.message).join(', ');
-      Logging.error(`User input validation failed: ${errorMessage}`);
+      Logging.warn(`User input validation failed: ${errorMessage}`);
       return res.status(400).json({ message: 'Invalid input', errors: errorMessage });
     }
 
@@ -58,35 +58,25 @@ export const validateUserUpdateInput = async (req: Request, res: Response, next:
     
     if (error) {
       const errorMessage = error.details.map(detail => detail.message).join(', ');
-      Logging.error(`User update input validation failed: ${errorMessage}`);
+      Logging.warn(`User update input validation failed: ${errorMessage}`);
       return res.status(400).json({ message: 'Invalid input', errors: errorMessage });
     }
 
     // Check uniqueness of username and email if they are being updated
     const { username, email } = req.body;
-    const userId = req.params.userId; // Assuming the user ID is passed in the URL
+    const userId = req.params.id; // Make sure this matches your route parameter name
 
-    if (username || email) {
-      const query = { 
-        _id: { $ne: userId }, // Exclude the current user
-        $or: [] as { [key: string]: string }[]
-      };
+    if (username !== undefined) {
+      const existingUsername = await User.findOne({ username, _id: { $ne: userId } });
+      if (existingUsername) {
+        return res.status(400).json({ message: 'Username already exists' });
+      }
+    }
 
-      if (username) query.$or.push({ username });
-      if (email) query.$or.push({ email });
-
-      const existingUser = await User.findOne(query);
-
-      if (existingUser) {
-        let errorMessage = '';
-        if (username && existingUser.username === username) {
-          errorMessage += 'Username already exists. ';
-        }
-        if (email && existingUser.email === email) {
-          errorMessage += 'Email already exists. ';
-        }
-        Logging.error(`User update input validation failed: ${errorMessage}`);
-        return res.status(400).json({ message: 'Invalid input', errors: errorMessage.trim() });
+    if (email !== undefined) {
+      const existingEmail = await User.findOne({ email, _id: { $ne: userId } });
+      if (existingEmail) {
+        return res.status(400).json({ message: 'Email already exists' });
       }
     }
 

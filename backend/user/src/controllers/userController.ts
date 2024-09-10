@@ -7,13 +7,17 @@ export const userController = {
   // Create a new user
   createUser: async (req: Request, res: Response) => {
     try {
-      const { username, email, password, firstName, lastName } = req.body;
+      const { username, email, password, firstName, lastName, oauthProvider, oauthId, profilePicture } = req.body;
+
       const newUser = new User({
         username,
         email,
         password,
         firstName,
-        lastName
+        lastName,
+        oauthProvider,
+        oauthId,
+        profilePicture
       });
       await newUser.save();
       Logging.info(`User created: ${username}`);
@@ -49,23 +53,27 @@ export const userController = {
   // Update user
   updateUser: async (req: Request, res: Response) => {
     try {
-      const { username, email, firstName, lastName, password } = req.body;
-      
+      const { username, email, firstName, lastName, password, oauthProvider, oauthId, profilePicture } = req.body;
+      const userId = req.params.id;
+
       const updateFields: Partial<IUser> = {};
       if (username !== undefined) updateFields.username = username;
       if (email !== undefined) updateFields.email = email;
       if (firstName !== undefined) updateFields.firstName = firstName;
       if (lastName !== undefined) updateFields.lastName = lastName;
       if (password !== undefined) updateFields.password = password;
+      if (oauthProvider !== undefined) updateFields.oauthProvider = oauthProvider;
+      if (oauthId !== undefined) updateFields.oauthId = oauthId;
+      if (profilePicture !== undefined) updateFields.profilePicture = profilePicture;
 
       const updatedUser = await User.findOneAndUpdate(
-        { _id: req.params.id },
+        { _id: userId },
         { $set: updateFields },  // Use $set explicitly
         { new: true, runValidators: true }
       ).select('-password');
 
       if (!updatedUser) {
-        Logging.warn(`User not found for update: ${req.params.id}`);
+        Logging.warn(`User not found for update: ${userId}`);
         return res.status(404).json({ message: 'User not found' });
       }
 
