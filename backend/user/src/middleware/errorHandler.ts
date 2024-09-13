@@ -1,6 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import Logging from '../utils/Logging';
 
+const NODE_ENV = process.env.NODE_ENV;
+if (!NODE_ENV) {
+  throw new Error('NODE_ENV is not set in environment variables');
+}
+
 export class AppError extends Error {
   constructor(
     message: string,
@@ -22,14 +27,11 @@ export const errorHandler = (err: AppError | Error, req: Request, res: Response,
     Logging.error(appError.stack || 'No stack trace available');
   }
 
-  // Determine if we're in development or production
-  const isDevelopment = process.env.NODE_ENV === 'development';
-
   // Prepare the error response
   const errorResponse = {
     error: {
       message: appError.isOperational ? appError.message : 'An unexpected error occurred',
-      ...(isDevelopment && { stack: appError.stack }),
+      ...(NODE_ENV === 'development' && { stack: appError.stack }),
     },
   };
 

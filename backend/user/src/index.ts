@@ -10,8 +10,19 @@ import Logging from './utils/Logging';
 
 dotenv.config();
 
+// Check for essential environment variables
+const PORT = process.env.PORT;
+const NODE_ENV = process.env.NODE_ENV;
+
+if (!PORT) {
+    throw new Error('PORT is not set in environment variables');
+}
+
+if (!NODE_ENV) {
+    throw new Error('NODE_ENV is not set in environment variables');
+}
+
 const app = express();
-const port = process.env.PORT || 3000;
 
 const startServer = () => {
 	// Middleware
@@ -29,8 +40,8 @@ const startServer = () => {
 	app.use(errorHandler);
 
 	// Start listening
-	app.listen(port, () => {
-		Logging.info(`User Server is running on port ${port}`);
+	app.listen(PORT, () => {
+		Logging.info(`User Server is running on port ${PORT} in ${NODE_ENV} mode`);
 	});
 
 	// Global error handlers
@@ -52,4 +63,3 @@ const startServer = () => {
 // Connect to MongoDB and start server
 Logging.info('Initiating database connection...');
 connectDB(startServer);
-
