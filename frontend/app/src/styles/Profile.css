@@ -1,0 +1,164 @@
+.profile-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.profile-content {
+  flex-grow: 1;
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  height: 120px; /* Adjust as needed */
+}
+
+.profile-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #2196f3;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-right: 20px; /* Space between avatar and name */
+}
+
+.page-title {
+  font-size: 20px;
+  color: #333;
+  margin-top: 4%;
+}
+
+.profile-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 30px; /* Increased padding */
+  backdrop-filter: blur(5px);
+  width: 450px; /* Fixed width */
+  max-width: 90%; /* Ensures responsiveness on smaller screens */
+  margin: 0 auto; /* Center the card */
+}
+
+.info-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.info-label {
+  font-weight: bold;
+  color: #555;
+  display: flex;
+  align-items: center;
+}
+
+.info-label svg {
+  margin-right: 10px;
+  color: #2196f3;
+}
+
+.info-value {
+  color: #333;
+  font-size: 18px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 20px; /* Space between form groups */
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #fff;
+  box-sizing: border-box; /* This ensures padding is included in width */
+}
+
+.form-group input:focus {
+  border-color: #2196f3;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.button-group {
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  gap: 15%; /* Space between buttons */
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  min-width: 100px; /* Set a minimum width */
+}
+
+.btn svg, .btn img {
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+}
+
+.btn-primary {
+  background: #2196f3;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1e88e5;
+  box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3);
+}
+
+.btn-secondary {
+  background: #f44336;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: #d32f2f;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger {
+  background: #f44336;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #d32f2f;
+  box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+}

@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
+.auth-header-wrapper {
+  background-color: #f0f2f5;
+  padding: 20px 0;
+}
+
+.auth-header {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.auth-welcome {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.auth-welcome-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  color: #4b4b4b; /* White text for contrast */
+  margin: 0 20px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.auth-welcome-line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #4b4b4b; /* White lines */
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .auth-welcome-text {
+    font-size: 24px;
+    margin: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-welcome-text {
+    font-size: 20px;
+    margin: 0 5px;
+  }
+  
+  .auth-welcome-line {
+    max-width: 60px;
+  }
+}
