@@ -3,6 +3,9 @@ import { User, IUser } from '../models/userModel';
 import Logging from '../utils/Logging';
 import * as argon2 from 'argon2';
 import { AuthRequest, generateToken } from '../middleware/authMiddleware';
+import { OAuth2Client } from 'google-auth-library';
+
+const client = new OAuth2Client(process.env.OAuthClientID);
 
 export const userController = {
   // Create a new user
@@ -27,8 +30,23 @@ export const userController = {
         return res.status(500).json({ message: 'Error generating authentication token' });
       }
 
+      // Create a user object without sensitive information
+      const userResponse = {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        isVerified: newUser.isVerified,
+        profilePicture: newUser.profilePicture
+      };
+
       Logging.info(`User created: ${username} (${newUser._id})`);
-      res.status(201).json({ message: 'User created successfully', userId: newUser._id, token });
+      res.status(201).json({
+        message: 'User created successfully',
+        token,
+        user: userResponse
+      });
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'ValidationError') {
@@ -67,9 +85,8 @@ export const userController = {
 
   // Update user
   updateUser: async (req: AuthRequest, res: Response) => {
-    Logging.info(`Update User - Request received for user ID: ${req.params.id}`);
+    Logging.info(`Update User - Method: ${req.method}, URL: ${req.originalUrl}, Params: ${JSON.stringify(req.params)}`);
     try {
-      const { username, email, firstName, lastName, password, oauthProvider, oauthId, profilePicture } = req.body;
       const userId = req.params.id;
 
       // Check if the authenticated user is updating their own data
@@ -77,16 +94,8 @@ export const userController = {
         Logging.warn(`Update User - Access denied for user ${req.user._id} updating ${userId}`);
         return res.status(403).json({ message: 'Access denied' });
       }
-
-      const updateFields: Partial<IUser> = {};
-      if (username !== undefined) updateFields.username = username;
-      if (email !== undefined) updateFields.email = email;
-      if (firstName !== undefined) updateFields.firstName = firstName;
-      if (lastName !== undefined) updateFields.lastName = lastName;
-      if (password !== undefined) updateFields.password = password;
-      if (oauthProvider !== undefined) updateFields.oauthProvider = oauthProvider;
-      if (oauthId !== undefined) updateFields.oauthId = oauthId;
-      if (profilePicture !== undefined) updateFields.profilePicture = profilePicture;
+      
+      const updateFields: Partial<IUser> = req.body;
 
       const updatedUser = await User.findOneAndUpdate(
         { _id: userId },
@@ -163,11 +172,93 @@ export const userController = {
         return res.status(500).json({ message: 'Error generating authentication token' });
       }
 
+      // Create a user object without sensitive information
+      const userResponse = {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isVerified: user.isVerified,
+        profilePicture: user.profilePicture
+      };
+
       Logging.info(`User logged in: ${user.username} (${user._id})`);
-      res.json({ message: 'Login successful', userId: user._id, token });
+      res.json({
+        message: 'Login successful',
+        token,
+        user: userResponse
+      });
     } catch (error) {
       Logging.error(`Login - Error during login: ${error}`);
       res.status(500).json({ message: 'Error during login', error });
+    }
+  },
+
+  googleAuth: async (req: Request, res: Response) => {
+    Logging.info(`Google Auth - Request received`);
+    try {
+      const { token } = req.body;
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.OAuthClientID,
+      });
+      const payload = ticket.getPayload();
+      if (!payload) {
+        return res.status(400).json({ message: 'Invalid token' });
+      }
+
+      const { email, name, picture, sub } = payload;
+      let user = await User.findOne({ email });
+
+      if (!user) {
+        // Create a new user if they don't exist
+        user = new User({
+          email: email ?? '',
+          username: email ? email.split('@')[0] : '', 
+          firstName: name?.split(' ')[0] ?? '',
+          lastName: name ? name.split(' ').slice(1).join(' ') : '',
+          isVerified: true,
+          oauthProvider: 'google',
+          oauthId: sub,
+          profilePicture: picture,
+        });
+        await user.save();
+        Logging.info(`New user created via Google OAuth: ${user.email}`);
+      } else {
+        // Update existing user's OAuth info if necessary
+        user.oauthProvider = 'google';
+        user.oauthId = sub;
+        user.isVerified = true;
+        if (picture) user.profilePicture = picture;
+        await user.save();
+        Logging.info(`Existing user logged in via Google OAuth: ${user.email}`);
+      }
+
+      const authToken = generateToken(user._id);
+      if (!authToken) {
+        Logging.error(`Failed to generate token for user: ${user._id}`);
+        return res.status(500).json({ message: 'Error generating authentication token' });
+      }
+
+      const userResponse = {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isVerified: user.isVerified,
+        profilePicture: user.profilePicture
+      };
+
+      res.json({
+        message: 'Google authentication successful',
+        token: authToken,
+        user: userResponse
+      });
+    } catch (error) {
+      Logging.error(`Google Auth - Error: ${error}`);
+      res.status(500).json({ message: 'Error during Google authentication', error });
     }
   }
 };

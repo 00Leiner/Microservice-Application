@@ -2,6 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
 import Logging from '../utils/Logging';
 import { User } from '../models/userModel';
+import { IUser } from '../models/userModel';
+
+// Helper function to capitalize the first letter if it's not a number
+const capitalizeFirstLetter = (str: string): string => {
+  if (!str) return str;
+  if (/^\d/.test(str)) return str; // Return unchanged if starts with a number
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
 
 const userSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
@@ -17,6 +25,14 @@ const userSchema = Joi.object({
 
 export const validateUserInput = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Capitalize firstName and lastName
+    if (req.body.firstName) {
+      req.body.firstName = capitalizeFirstLetter(req.body.firstName);
+    }
+    if (req.body.lastName) {
+      req.body.lastName = capitalizeFirstLetter(req.body.lastName);
+    }
+
     // Validate input format
     const { error } = userSchema.validate(req.body, { abortEarly: false });
     
@@ -52,10 +68,27 @@ export const validateUserInput = async (req: Request, res: Response, next: NextF
 
 export const validateUserUpdateInput = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const updateSchema = userSchema.fork(['username', 'email', 'password'], (schema) => schema.optional());
-    
-    const { error } = updateSchema.validate(req.body, { abortEarly: false });
-    
+    const { username, email, firstName, lastName, password, oauthProvider, oauthId, profilePicture } = req.body;
+    const userId = req.params.id;
+
+    const updateFields: Partial<IUser> = {};
+    if (username !== undefined) updateFields.username = username;
+    if (email !== undefined) updateFields.email = email;
+    if (firstName !== undefined) updateFields.firstName = capitalizeFirstLetter(firstName);
+    if (lastName !== undefined) updateFields.lastName = capitalizeFirstLetter(lastName);
+    if (password !== undefined) updateFields.password = password;
+    if (oauthProvider !== undefined) updateFields.oauthProvider = oauthProvider;
+    if (oauthId !== undefined) updateFields.oauthId = oauthId;
+    if (profilePicture !== undefined) updateFields.profilePicture = profilePicture;
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ message: 'No update fields provided' });
+    }
+
+    // Use the existing userSchema, but make all fields optional
+    const updateSchema = userSchema.fork(Object.keys(userSchema.describe().keys), (schema) => schema.optional());
+    const { error } = updateSchema.validate(updateFields, { abortEarly: false });
+
     if (error) {
       const errorMessage = error.details.map(detail => detail.message).join(', ');
       Logging.warn(`User update input validation failed: ${errorMessage}`);
@@ -63,22 +96,22 @@ export const validateUserUpdateInput = async (req: Request, res: Response, next:
     }
 
     // Check uniqueness of username and email if they are being updated
-    const { username, email } = req.body;
-    const userId = req.params.id; // Make sure this matches your route parameter name
-
-    if (username !== undefined) {
-      const existingUsername = await User.findOne({ username, _id: { $ne: userId } });
+    if (updateFields.username) {
+      const existingUsername = await User.findOne({ username: updateFields.username, _id: { $ne: userId } });
       if (existingUsername) {
         return res.status(400).json({ message: 'Username already exists' });
       }
     }
 
-    if (email !== undefined) {
-      const existingEmail = await User.findOne({ email, _id: { $ne: userId } });
+    if (updateFields.email) {
+      const existingEmail = await User.findOne({ email: updateFields.email, _id: { $ne: userId } });
       if (existingEmail) {
         return res.status(400).json({ message: 'Email already exists' });
       }
     }
+
+    // Attach the validated updateFields to the request object
+    req.body = updateFields;
 
     Logging.info('User update input validation passed');
     next();
@@ -111,5 +144,17 @@ export const validateLoginInput = (req: Request, res: Response, next: NextFuncti
   }
 
   Logging.info('Login input validation passed');
+  next();
+};
+
+export const validateGoogleAuthInput = (req: Request, res: Response, next: NextFunction) => {
+  const schema = Joi.object({
+    token: Joi.string().required(),
+  });
+
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
   next();
 };
