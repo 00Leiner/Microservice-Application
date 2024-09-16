@@ -51,7 +51,7 @@ Follow these steps to set up your development environment for the Backend Micros
    Create a `.env` file in the `Microservice-Application/backend/user` or `Microservice-Application/backend/userData` directory:
 
    ```
-   touch .env
+   echo. > .env
    ```
 
    Add the following environment variables to the `.env` file:
@@ -91,14 +91,7 @@ Follow these steps to set up your development environment for the Backend Micros
 
 7. **Verify the Service**
 
-   The user microservice should now be running on `http://localhost:3000` (or the port you specified in the `.env` file). You can verify this by checking the console output. Make sure the two different project has a different port if running in the same device
-
-## Next Steps
-
-- Explore the `src` directory to understand the structure and functionality of the user microservice.
-- Review and update the API endpoints in `src/routes/userRoute.ts` as needed.
-- Check the `src/controllers/userController.ts` file to understand and modify user-related operations.
-- Examine `src/models/userModel.ts` for the user data schema.
+   The user microservice should now be running on `http://localhost:5000` (or the port you specified in the `.env` file). You can verify this by checking the console output. Make sure the two different project has a different port if running in the same device
 
 # Frontend Documentation Setup
 
@@ -156,14 +149,6 @@ Follow these steps to set up your development environment for the Frontend:
 
    The frontend application should now be running on `http://localhost:3000`. You can verify this by opening the URL in your web browser.
 
-## Project Structure
-
-- `src/index.tsx`: The entry point of the application
-- `src/App.tsx`: The main component that sets up routing
-- `src/components/`: Contains React components (AuthPage, Dashboard)
-- `src/context/`: Contains the AuthContext for state management
-- `src/index.css`: Global styles for the application
-
 ## Available Scripts
 
 In the project directory, you can run:
@@ -172,10 +157,3 @@ In the project directory, you can run:
 - `npm test`: Launches the test runner
 - `npm run build`: Builds the app for production
 - `npm run eject`: Ejects from Create React App (one-way operation)
-
-## Next Steps
-
-- Explore the `src` directory to understand the structure and functionality of the frontend application.
-- Review and update the components in `src/components/` as needed.
-- Check the `src/context/AuthContext.tsx` file to understand and modify authentication-related operations.
-- Examine `src/App.tsx` for the main application structure and routing.
