@@ -148,13 +148,18 @@ export const validateLoginInput = (req: Request, res: Response, next: NextFuncti
 };
 
 export const validateGoogleAuthInput = (req: Request, res: Response, next: NextFunction) => {
+  Logging.info('Validating Google Auth input');
+  
   const schema = Joi.object({
-    token: Joi.string().required(),
+    credential: Joi.string().required(),
   });
-
   const { error } = schema.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: error.details[0].message });
+    const errorMessage = error.details[0].message;
+    Logging.error(`Google Auth input validation failed: ${errorMessage}`);
+    return res.status(400).json({ message: errorMessage });
   }
+
+  Logging.info('Google Auth input validation passed');
   next();
 };

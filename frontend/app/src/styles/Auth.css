@@ -137,6 +137,21 @@
 .signup-link a:hover {
   text-decoration: underline;
 }
+.login-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.login-link a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
 
 .social-login {
   margin-top: 20px;
@@ -145,6 +160,16 @@
 }
 
 .social-login button {
+  cursor: pointer;
+}
+
+.social-signup {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.social-signup button {
   cursor: pointer;
 }
 

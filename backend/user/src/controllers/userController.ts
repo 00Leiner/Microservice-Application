@@ -195,49 +195,38 @@ export const userController = {
     }
   },
 
-  googleAuth: async (req: Request, res: Response) => {
-    Logging.info(`Google Auth - Request received`);
+  googleLogin: async (req: Request, res: Response) => {
+    Logging.info(`Google Login - Request received`);
     try {
-      const { token } = req.body;
+      const { credential } = req.body;
+      Logging.info(`Google Login - Verifying token`);
       const ticket = await client.verifyIdToken({
-        idToken: token,
+        idToken: credential,
         audience: process.env.OAuthClientID,
       });
       const payload = ticket.getPayload();
-      if (!payload) {
-        return res.status(400).json({ message: 'Invalid token' });
+      if (!payload || !payload.email) {
+        Logging.warn(`Google Login - Invalid token or email not provided`);
+        return res.status(400).json({ message: 'Invalid token or email not provided' });
       }
 
-      const { email, name, picture, sub } = payload;
-      let user = await User.findOne({ email });
-
+      Logging.info(`Google Login - Searching for user with email: ${payload.email}`);
+      const user = await User.findOne({ email: payload.email });
       if (!user) {
-        // Create a new user if they don't exist
-        user = new User({
-          email: email ?? '',
-          username: email ? email.split('@')[0] : '', 
-          firstName: name?.split(' ')[0] ?? '',
-          lastName: name ? name.split(' ').slice(1).join(' ') : '',
-          isVerified: true,
-          oauthProvider: 'google',
-          oauthId: sub,
-          profilePicture: picture,
-        });
-        await user.save();
-        Logging.info(`New user created via Google OAuth: ${user.email}`);
-      } else {
-        // Update existing user's OAuth info if necessary
-        user.oauthProvider = 'google';
-        user.oauthId = sub;
-        user.isVerified = true;
-        if (picture) user.profilePicture = picture;
-        await user.save();
-        Logging.info(`Existing user logged in via Google OAuth: ${user.email}`);
+        Logging.warn(`Google Login - User not found for email: ${payload.email}`);
+        return res.status(404).json({ message: 'User not found. Please sign up first.' });
       }
 
+      Logging.info(`Google Login - Updating OAuth info for user: ${user._id}`);
+      user.oauthProvider = 'google';
+      user.oauthId = payload.sub;
+      user.isVerified = true;
+      await user.save();
+
+      Logging.info(`Google Login - Generating auth token for user: ${user._id}`);
       const authToken = generateToken(user._id);
       if (!authToken) {
-        Logging.error(`Failed to generate token for user: ${user._id}`);
+        Logging.error(`Google Login - Failed to generate token for user: ${user._id}`);
         return res.status(500).json({ message: 'Error generating authentication token' });
       }
 
@@ -251,14 +240,79 @@ export const userController = {
         profilePicture: user.profilePicture
       };
 
+      Logging.info(`Google Login - User logged in successfully: ${user.email}`);
       res.json({
-        message: 'Google authentication successful',
+        message: 'Google login successful',
         token: authToken,
         user: userResponse
       });
     } catch (error) {
-      Logging.error(`Google Auth - Error: ${error}`);
-      res.status(500).json({ message: 'Error during Google authentication', error });
+      Logging.error(`Google Login - Error: ${error}`);
+      res.status(500).json({ message: 'Error during Google login', error });
+    }
+  },
+
+  googleSignup: async (req: Request, res: Response) => {
+    Logging.info(`Google Signup - Request received`);
+    try {
+      const { credential } = req.body;
+      Logging.info(`Google Signup - Verifying token`);
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: process.env.OAuthClientID,
+      });
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) {
+        Logging.warn(`Google Signup - Invalid token or email not provided`);
+        return res.status(400).json({ message: 'Invalid token or email not provided' });
+      }
+
+      Logging.info(`Google Signup - Checking if user already exists: ${payload.email}`);
+      let user = await User.findOne({ email: payload.email });
+      if (user) {
+        Logging.warn(`Google Signup - User already exists: ${payload.email}`);
+        return res.status(400).json({ message: 'User already exists. Please login instead.' });
+      }
+
+      Logging.info(`Google Signup - Creating new user: ${payload.email}`);
+      user = new User({
+        email: payload.email,
+        username: payload.email.split('@')[0],
+        firstName: payload.given_name || '',
+        lastName: payload.family_name || '',
+        isVerified: true,
+        oauthProvider: 'google',
+        oauthId: payload.sub,
+        profilePicture: payload.picture || '',
+      });
+      await user.save();
+
+      Logging.info(`Google Signup - Generating auth token for new user: ${user._id}`);
+      const authToken = generateToken(user._id);
+      if (!authToken) {
+        Logging.error(`Google Signup - Failed to generate token for user: ${user._id}`);
+        return res.status(500).json({ message: 'Error generating authentication token' });
+      }
+
+      const userResponse = {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isVerified: user.isVerified,
+        profilePicture: user.profilePicture
+      };
+
+      Logging.info(`Google Signup - New user created successfully: ${user.email}`);
+      res.status(201).json({
+        message: 'Google signup successful',
+        token: authToken,
+        user: userResponse
+      });
+    } catch (error) {
+      Logging.error(`Google Signup - Error: ${error}`);
+      res.status(500).json({ message: 'Error during Google signup', error });
     }
   }
 };

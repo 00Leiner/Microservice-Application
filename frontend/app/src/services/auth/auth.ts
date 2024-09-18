@@ -21,18 +21,31 @@ const AuthService = {
         localStorage.setItem('token', response.data.token);
       }
       return response.data;
-    } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        // If the error has a response with a message, throw that message
+        throw new Error(error.response.data.message);
+      } else {
+        // If there's no specific message, throw a generic error
+        throw new Error('An error occurred during login. Please try again.');
+      }
     }
   },
 
   signup: async (userData: SignupData) => {
-    const response = await api.post('/users/register', userData);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+    try {
+      const response = await api.post('/users/register', userData);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      return response.data;
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        throw new Error(error.response.data.message);
+      } else {
+        throw new Error('An error occurred during signup. Please try again.');
+      }
     }
-    return response.data;
   },
 
   logout: () => {
@@ -43,16 +56,35 @@ const AuthService = {
     return !!localStorage.getItem('token');
   },
 
-  googleAuth: async (credential: string) => {
+  googleLogin: async (credential: string) => {
     try {
-      const response = await api.post('/users/google-auth', { credential });
+      const response = await api.post('/users/google-login', { credential });
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
       return response.data;
-    } catch (error) {
-      console.error('Google auth error:', error);
-      throw error;
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        throw new Error(error.response.data.message);
+      } else {
+        throw new Error('An error occurred during Google login. Please try again.');
+      }
+    }
+  },
+
+  googleSignup: async (credential: string) => {
+    try {
+      const response = await api.post('/users/google-signup', { credential });
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      return response.data;
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        throw new Error(error.response.data.message);
+      } else {
+        throw new Error('An error occurred during Google signup. Please try again.');
+      }
     }
   },
 };

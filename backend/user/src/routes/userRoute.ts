@@ -11,6 +11,7 @@ router.post('/login', validateLoginInput, asyncHandler(userController.loginUser)
 router.get('/:id', authMiddleware, asyncHandler(userController.getUserById));
 router.put('/:id', authMiddleware, validateUserUpdateInput, asyncHandler(userController.updateUser));
 router.delete('/:id', authMiddleware, asyncHandler(userController.deleteUser));
-router.post('/google-auth', validateGoogleAuthInput, asyncHandler(userController.googleAuth));
+router.post('/google-login', validateGoogleAuthInput, asyncHandler(userController.googleLogin));
+router.post('/google-signup', validateGoogleAuthInput, asyncHandler(userController.googleSignup));
 
 export default router;

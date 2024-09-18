@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import AuthService from '../../services/auth/auth';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/Auth.css';
@@ -12,23 +13,6 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  useEffect(() => {
-    const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-    console.log("Client ID:", clientId);
-    if (window.google && clientId) {
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: handleGoogleResponse
-      });
-      window.google.accounts.id.renderButton(
-        document.getElementById("googleSignInDiv"),
-        { theme: "outline", size: "large" }
-      );
-    } else {
-      console.error("Google API not loaded or Client ID not found");
-    }
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
@@ -37,24 +21,19 @@ const Login: React.FC = () => {
       const response = await AuthService.login({ login: loginInput, password });
       login(response.token, response.user);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Invalid credentials');
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
     }
   };
 
-  const handleGoogleResponse = async (response: any) => {
+  const handleGoogleAuth = async (credentialResponse: any) => {
     try {
-      const authResponse = await AuthService.googleAuth(response.credential);
+      const authResponse = await AuthService.googleLogin(credentialResponse.credential);
       login(authResponse.token, authResponse.user);
       navigate('/dashboard');
-    } catch (err) {
-      setError('Google signup/login failed');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during Google authentication');
     }
-  };
-
-  const handleGoogleFailure = (error: any) => {
-    console.error('Google login error:', error);
-    setError('Google login failed');
   };
 
   return (
@@ -99,10 +78,15 @@ const Login: React.FC = () => {
         </button>
       </form>
       <div className="social-login">
-        <div id="googleSignInDiv"></div>
+        <GoogleLogin
+          onSuccess={handleGoogleAuth}
+          useOneTap
+          text="signin_with"
+          locale="fil"
+        />
       </div>
       <p className="signup-link">
-        Need an account? <Link to="/signup">Sign up</Link>
+        Don't have an account? <Link to="/signup">Sign up</Link>
       </p>
     </div>
   );
