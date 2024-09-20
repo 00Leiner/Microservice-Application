@@ -102,7 +102,14 @@ const Signup: React.FC = () => {
       <div className="social-signup">
         <GoogleLogin
           onSuccess={handleGoogleSignup}
+          onError={() => {
+            console.error('Signup Failed:');
+            setError('Google Signup failed. Please try again.');
+          }}
           useOneTap={false}
+          ux_mode="popup"
+          text="signin_with"
+          locale="fil"
         />
       </div>
       <p className="login-link">

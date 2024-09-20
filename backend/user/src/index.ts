@@ -27,11 +27,28 @@ const app = express();
 const startServer = () => {
 	// Middleware
 	Logging.info('Setting up middleware...');
-	app.use(helmet());
 	app.use(cors({
-		origin: 'http://localhost:3000', 
-		credentials: true
-	}));
+		origin: process.env.NODE_ENV === 'production' 
+		  ? 'https://yourdomain.com' 
+		  : 'http://localhost:3000',
+		credentials: true,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization']
+	  }));
+	app.use(helmet());
+	app.use(helmet.contentSecurityPolicy({
+		directives: {
+		  defaultSrc: ["'self'"],
+		  scriptSrc: ["'self'", 'https://accounts.google.com', 'https://apis.google.com', 'https://play.google.com'],
+		  connectSrc: ["'self'", 'https://accounts.google.com', 'https://www.googleapis.com', 'https://play.google.com'],
+		  frameSrc: ["'self'", 'https://accounts.google.com'],
+		},
+	  }));
+	app.use((req, res, next) => {
+		res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+		next();
+	});
+
 	app.use(express.json());
 	app.use(loggingMiddleware);
 

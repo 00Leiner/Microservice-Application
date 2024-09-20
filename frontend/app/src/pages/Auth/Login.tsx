@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import AuthService from '../../services/auth/auth';
@@ -32,6 +32,7 @@ const Login: React.FC = () => {
       login(authResponse.token, authResponse.user);
       navigate('/dashboard');
     } catch (err: any) {
+      console.error('Google auth error:', err);
       setError(err.message || 'An error occurred during Google authentication');
     }
   };
@@ -80,7 +81,12 @@ const Login: React.FC = () => {
       <div className="social-login">
         <GoogleLogin
           onSuccess={handleGoogleAuth}
-          useOneTap
+          onError={() => {
+            console.error('Login Failed');
+            setError('Google login failed. Please try again.');
+          }}
+          useOneTap={false}
+          ux_mode="popup"
           text="signin_with"
           locale="fil"
         />
