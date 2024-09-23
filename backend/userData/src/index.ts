@@ -8,11 +8,12 @@ import locationRoutes from './routes/locationRoutes';
 import { authMiddleware } from './middleware/auth';
 import Logging from './utils/Logging';
 import { errorHandler } from './middleware/errorHandler';
+import weatherRoutes from './routes/weatherRoutes';
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT;
 
 const startServer = () => {
 	// Middleware
@@ -25,6 +26,7 @@ const startServer = () => {
 	// Routes
 	Logging.info('Setting up routes...');
 	app.use('/userData/locations', authMiddleware, locationRoutes);  //app.use('/userData/locations', authMiddleware, locationRoutes);
+	app.use('/weather', authMiddleware, weatherRoutes);
 
 	// Error handling middleware
 	app.use(errorHandler);

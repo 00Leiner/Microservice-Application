@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Logging from '../utils/Logging';
 import UserLocation, { ILocation, IUserLocation } from '../models/locationModel';
 import mongoose from 'mongoose';
+import { getWeatherByCoordinates } from '../services/weatherService'; 
 
 export const locationController = {
   // Get saved locations for a user
@@ -189,5 +190,6 @@ export const locationController = {
       }
       res.status(500).json({ message: 'Error updating saved location', error });
     }
-  }
+  },
+
 };
