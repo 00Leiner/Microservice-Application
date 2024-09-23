@@ -32,7 +32,7 @@ export const userController = {
 
       // Create a user object without sensitive information
       const userResponse = {
-        id: newUser._id,
+        _id: newUser._id,
         username: newUser.username,
         email: newUser.email,
         firstName: newUser.firstName,
@@ -59,19 +59,19 @@ export const userController = {
     }
   },
 
-  // Get user by ID
+  // Get user by _id
   getUserById: async (req: AuthRequest, res: Response) => {
-    Logging.info(`Get User - Request received for user ID: ${req.params.id}`);
+    Logging.info(`Get User - Request received for user _id: ${req.params._id}`);
     try {
-      const user = await User.findById(req.params.id).select('-password');
+      const user = await User.findById(req.params._id).select('-password');
       if (!user) {
-        Logging.warn(`Get User - User not found: ${req.params.id}`);
+        Logging.warn(`Get User - User not found: ${req.params._id}`);
         return res.status(404).json({ message: 'User not found' });
       }
       
       // Check if the authenticated user is requesting their own data
-      if (req.user._id.toString() !== req.params.id) {
-        Logging.warn(`Get User - Access denied for user ${req.user._id} requesting data for ${req.params.id}`);
+      if (req.user._id.toString() !== req.params._id) {
+        Logging.warn(`Get User - Access denied for user ${req.user._id} requesting data for ${req.params._id}`);
         return res.status(403).json({ message: 'Access denied' });
       }
 
@@ -87,7 +87,7 @@ export const userController = {
   updateUser: async (req: AuthRequest, res: Response) => {
     Logging.info(`Update User - Method: ${req.method}, URL: ${req.originalUrl}, Params: ${JSON.stringify(req.params)}`);
     try {
-      const userId = req.params.id;
+      const userId = req.params._id;
 
       // Check if the authenticated user is updating their own data
       if (req.user._id.toString() !== userId) {
@@ -124,17 +124,17 @@ export const userController = {
 
   // Delete user
   deleteUser: async (req: AuthRequest, res: Response) => {
-    Logging.info(`Delete User - Request received for user ID: ${req.params.id}`);
+    Logging.info(`Delete User - Request received for user _id: ${req.params._id}`);
     try {
       // Check if the authenticated user is deleting their own account
-      if (req.user._id.toString() !== req.params.id) {
-        Logging.warn(`Delete User - Access denied for user ${req.user._id} deleting ${req.params.id}`);
+      if (req.user._id.toString() !== req.params._id) {
+        Logging.warn(`Delete User - Access denied for user ${req.user._id} deleting ${req.params._id}`);
         return res.status(403).json({ message: 'Access denied' });
       }
 
-      const deletedUser = await User.findByIdAndDelete(req.params.id);
+      const deletedUser = await User.findByIdAndDelete(req.params._id);
       if (!deletedUser) {
-        Logging.warn(`Delete User - User not found for deletion: ${req.params.id}`);
+        Logging.warn(`Delete User - User not found for deletion: ${req.params._id}`);
         return res.status(404).json({ message: 'User not found' });
       }
       Logging.warn(`User deleted: ${deletedUser.username} (${deletedUser._id})`);
@@ -174,7 +174,7 @@ export const userController = {
 
       // Create a user object without sensitive information
       const userResponse = {
-        id: user._id,
+        _id: user._id,
         username: user.username,
         email: user.email,
         firstName: user.firstName,
@@ -231,7 +231,7 @@ export const userController = {
       }
 
       const userResponse = {
-        id: user._id,
+        _id: user._id,
         username: user.username,
         email: user.email,
         firstName: user.firstName,
@@ -295,7 +295,7 @@ export const userController = {
       }
 
       const userResponse = {
-        id: user._id,
+        _id: user._id,
         username: user.username,
         email: user.email,
         firstName: user.firstName,

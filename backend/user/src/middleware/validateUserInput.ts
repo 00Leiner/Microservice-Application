@@ -69,7 +69,7 @@ export const validateUserInput = async (req: Request, res: Response, next: NextF
 export const validateUserUpdateInput = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { username, email, firstName, lastName, password, oauthProvider, oauthId, profilePicture } = req.body;
-    const userId = req.params.id;
+    const userId = req.params._id;
 
     const updateFields: Partial<IUser> = {};
     if (username !== undefined) updateFields.username = username;
