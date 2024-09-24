@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AuthService from '../services/auth/auth';
 import UserService from '../services/user/user';
 
 interface User {
-  id: string;
+  _id: string;
   username: string;
   email: string;
 }
@@ -29,30 +28,29 @@ const useAuthProvider = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Validate token and fetch user data
       UserService.getCurrentUser()
         .then((userData) => {
           setUser(userData);
           setIsAuthenticated(true);
         })
         .catch(() => {
-          // If token is invalid, clear it
-          localStorage.removeItem('token');
+          localStorage.removeItem('userId'); 
+          localStorage.removeItem('token'); 
+          setIsAuthenticated(false); 
         });
-    }
+    } 
   }, []);
 
   const login = (token: string, user: User) => {
     localStorage.setItem('token', token);
-    localStorage.setItem('userId', user.id); // Add this line
+    localStorage.setItem('userId', user._id);
     setUser(user);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
-    AuthService.logout();
     localStorage.removeItem('token');
-    localStorage.removeItem('userId'); // Add this line
+    localStorage.removeItem('userId'); 
     setUser(null);
     setIsAuthenticated(false);
   };

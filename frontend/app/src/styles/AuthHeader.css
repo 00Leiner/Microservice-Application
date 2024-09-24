@@ -21,7 +21,7 @@
 .auth-welcome-text {
   font-family: 'Playfair Display', serif;
   font-size: 32px;
-  color: #4b4b4b; /* White text for contrast */
+  color: #4b4b4b;
   margin: 0 20px;
   font-weight: 700;
   white-space: nowrap;
@@ -30,7 +30,7 @@
 .auth-welcome-line {
   flex-grow: 1;
   height: 1px;
-  background-color: #4b4b4b; /* White lines */
+  background-color: #4b4b4b; 
   opacity: 0.7;
 }
 

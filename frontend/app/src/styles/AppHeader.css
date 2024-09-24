@@ -1,6 +1,6 @@
 .app-header {
-  background-color: #2196f3; /* Cloud color blue */
-  padding: 10px 0;
+  background-color: #2196f3; 
+  padding: 15px 20px; 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -8,7 +8,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -16,28 +15,45 @@
 .header-title {
   color: white;
   margin: 0;
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 24px; 
+  font-weight: 600; 
   letter-spacing: 0.5px;
 }
 
 .header-nav {
   display: flex;
-  gap: 20px;
+  gap: 50px; 
+  padding-right: 15%;
+}
+
+@media (max-width: 768px) {
+  .header-nav {
+    gap: 20px; 
+    padding-right: 10%; 
+  }
+}
+
+@media (max-width: 480px) {
+  .header-nav {
+    gap: 10px; 
+    padding-right: 5%;
+  }
 }
 
 .nav-link {
   color: white;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 18px; 
   font-weight: 500;
   transition: opacity 0.2s ease;
-  padding: 5px 0;
+  padding: 5px 10px;
+  border-radius: 10px; 
   position: relative;
 }
 
 .nav-link:hover {
   opacity: 0.8;
+  background-color: rgba(255, 255, 255, 0.1); 
 }
 
 .nav-link::after {
@@ -64,10 +80,12 @@
   cursor: pointer;
   transition: opacity 0.2s ease;
   padding: 5px;
+  border-radius: 5px;
 }
 
 .logout-button:hover {
   opacity: 0.8;
+  background-color: rgba(255, 255, 255, 0.1); 
 }
 
 @media (max-width: 768px) {
@@ -84,6 +102,6 @@
   }
 
   .nav-link {
-    font-size: 14px;
+    font-size: 16px; 
   }
 }

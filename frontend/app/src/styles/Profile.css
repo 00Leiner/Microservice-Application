@@ -35,7 +35,7 @@
   align-items: center;
   font-size: 24px;
   font-weight: bold;
-  margin-right: 20px; /* Space between avatar and name */
+  margin-right: 20px; 
 }
 
 .page-title {
@@ -48,11 +48,11 @@
   background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 30px; /* Increased padding */
+  padding: 30px;
   backdrop-filter: blur(5px);
-  width: 450px; /* Fixed width */
-  max-width: 90%; /* Ensures responsiveness on smaller screens */
-  margin: 0 auto; /* Center the card */
+  width: 450px; 
+  max-width: 90%;
+  margin: 0 auto; 
 }
 
 .info-group {
@@ -86,7 +86,7 @@
 }
 
 .form-group {
-  margin-bottom: 20px; /* Space between form groups */
+  margin-bottom: 20px; 
 }
 
 .form-group input {
@@ -97,7 +97,7 @@
   font-size: 16px;
   transition: all 0.3s ease;
   background: #fff;
-  box-sizing: border-box; /* This ensures padding is included in width */
+  box-sizing: border-box; 
 }
 
 .form-group input:focus {
@@ -108,8 +108,8 @@
 
 .button-group {
   display: flex;
-  justify-content: center; /* Center the buttons */
-  gap: 15%; /* Space between buttons */
+  justify-content: center; 
+  gap: 15%; 
   margin-top: 30px;
 }
 
@@ -124,7 +124,7 @@
   align-items: center;
   justify-content: center;
   white-space: nowrap;
-  min-width: 100px; /* Set a minimum width */
+  min-width: 100px; 
 }
 
 .btn svg, .btn img {

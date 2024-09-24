@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AppHeader from '../../components/AppHeader';
 import UserService from '../../services/user/user';
 import { useAuth } from '../../contexts/AuthContext';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import '../../styles/Profile.css';
 
 interface ProfileUser {
-  id: string;
+  _id: string;
   username: string;
   email: string;
   firstName: string;
@@ -24,16 +23,16 @@ const Profile: React.FC = () => {
   const { user, logout } = useAuth();
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
-  useEffect(() => {
+  useEffect(() => {      
     const fetchUserDetails = async () => {
       if (user) {
         try {
-          const userDetails = await UserService.getUserDetails(user.id);
+          const userDetails = await UserService.getUserDetails(user._id);
           setProfileUser(userDetails);
           setEditedUser(userDetails);
         } catch (err) {
           setError('Failed to fetch user details');
-        }
+        }                                      
       }
     };
 
@@ -50,10 +49,9 @@ const Profile: React.FC = () => {
     if (!editedUser || !user) return;
 
     try {
-      const updatedUser = await UserService.updateUser(user.id, editedUser);
+      const updatedUser = await UserService.updateUser(user._id, editedUser);
       setProfileUser(updatedUser);
       setIsEditing(false);
-      setError('');
     } catch (err) {
       setError('Failed to update user data');
     }
@@ -67,7 +65,7 @@ const Profile: React.FC = () => {
   const confirmDelete = async () => {
     if (!user) return;
     try {
-      await UserService.deleteUser(user.id);
+      await UserService.deleteUser(user._id);
       logout();
       navigate('/login');
     } catch (err) {
@@ -85,7 +83,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className="profile-page">
-      <AppHeader />
       <main className="profile-content">
         <div className="profile-header">
           <div className="profile-avatar">
@@ -102,7 +99,6 @@ const Profile: React.FC = () => {
               <div className="form-group">
                 <input
                   type="text"
-                  id="firstName"
                   name="firstName"
                   value={editedUser?.firstName || ''}
                   onChange={handleInputChange}
@@ -113,7 +109,6 @@ const Profile: React.FC = () => {
               <div className="form-group">
                 <input
                   type="text"
-                  id="lastName"
                   name="lastName"
                   value={editedUser?.lastName || ''}
                   onChange={handleInputChange}
@@ -124,7 +119,6 @@ const Profile: React.FC = () => {
               <div className="form-group">
                 <input
                   type="text"
-                  id="username"
                   name="username"
                   value={editedUser?.username || ''}
                   onChange={handleInputChange}
@@ -135,7 +129,6 @@ const Profile: React.FC = () => {
               <div className="form-group">
                 <input
                   type="email"
-                  id="email"
                   name="email"
                   value={editedUser?.email || ''}
                   onChange={handleInputChange}

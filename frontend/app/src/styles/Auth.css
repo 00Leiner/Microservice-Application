@@ -2,7 +2,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f8f9fa; /* Very light gray, almost white */
+  background-color: #f8f9fa; 
 }
 
 .auth-container {
@@ -62,7 +62,6 @@
 .checkbox-group {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
 }
 
 .checkbox-group input[type="checkbox"] {
@@ -191,4 +190,27 @@
   .btn {
     font-size: 14px;
   }
+}
+
+.double-input {
+  display: flex; 
+  justify-content: space-between; 
+}
+
+.input-wrapper {
+  position: relative;
+  flex: 1;
+  margin-right: 10px; 
+}
+
+.input-wrapper:last-child {
+  margin-right: 0; 
+}
+
+.input-wrapper i {
+  position: absolute; 
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
 }

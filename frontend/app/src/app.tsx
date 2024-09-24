@@ -8,20 +8,26 @@ import Dashboard from './pages/App/Dashboard';
 import Profile from './pages/App/Profile';
 import Saved from './pages/App/Saved';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import AppHeader from './components/AppHeader';
 
 const ProtectedRoute: React.FC<{ element: React.ReactElement }> = ({ element }) => {
   const { isAuthenticated } = useAuth();
   return isAuthenticated ? element : <Navigate to="/login" replace />;
 };
 
+const RedirectIfAuthenticated: React.FC<{ element: React.ReactElement }> = ({ element }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : element;
+};
+
 const AppRoutes: React.FC = () => {
   return (
     <Routes>
-      <Route path="/login" element={<><AuthHeader /><Login /></>} />
-      <Route path="/signup" element={<><AuthHeader /><Signup /></>} />
-      <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
-      <Route path="/saved" element={<ProtectedRoute element={<Saved />} />} />
-      <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
+      <Route path="/login" element={<RedirectIfAuthenticated element={<><AuthHeader /><Login /></>} />} />
+      <Route path="/signup" element={<RedirectIfAuthenticated element={<><AuthHeader /><Signup /></>} />} />
+      <Route path="/dashboard" element={<ProtectedRoute element={<><AppHeader /><Dashboard /></>} />} />
+      <Route path="/saved" element={<ProtectedRoute element={<><AppHeader /><Saved /></>} />} />
+      <Route path="/profile" element={<ProtectedRoute element={<><AppHeader /><Profile /></>} />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );

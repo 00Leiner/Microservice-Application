@@ -1,14 +1,22 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/AppHeader.css';
 
 const AppHeader: React.FC = () => {
   const navigate = useNavigate();
+  const { logout, isAuthenticated } = useAuth(); 
 
   const handleLogout = () => {
-    // TODO: Add logout logic here
-    navigate('/login');
+    logout();
+    navigate('/login'); 
   };
+
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login'); 
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <header className="app-header">

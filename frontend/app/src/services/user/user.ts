@@ -11,11 +11,12 @@ export interface UserUpdateData {
 
 const UserService = {
   getCurrentUser: async () => {
-    const userId = localStorage.getItem('userId'); // or however you store the current user's ID
+    const userId = localStorage.getItem('userId'); 
     if (!userId) {
       throw new Error('No user ID found');
     }
-    return UserService.getUserDetails(userId);
+    const response = await api.get(`/users/${userId}`);
+    return response.data;
   },
 
   getUserDetails: async (userId: string) => {

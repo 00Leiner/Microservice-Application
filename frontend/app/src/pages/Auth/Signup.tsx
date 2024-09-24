@@ -6,6 +6,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/Auth.css';
 
 const Signup: React.FC = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +34,7 @@ const Signup: React.FC = () => {
     }
 
     try {
-      const response = await AuthService.signup({ username, email, password });
+      const response = await AuthService.signup({ firstName, lastName, username, email, password });
       login(response.token, response.user);
       navigate('/dashboard');
     } catch (err: any) {
@@ -54,6 +56,28 @@ const Signup: React.FC = () => {
     <div className="auth-container">
       <h2>Sign Up</h2>
       <form onSubmit={handleSubmit}>
+        <div className="input-group double-input">
+          <div className="input-wrapper">
+            <i className="fas fa-user"></i> 
+            <input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-wrapper">
+            <i className="fas fa-user"></i>
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+        </div>
         <div className="input-group">
           <i className="fas fa-user"></i>
           <input
