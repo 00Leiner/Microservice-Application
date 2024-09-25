@@ -37,20 +37,19 @@ export const weatherController = {
     },
 
     async getLocationSuggestions(req: Request, res: Response) {
-        const { query } = req.query;
+        const { search } = req.query;
 
-        if (!query) {
-            Logging.warn('Search query is missing');
-            return res.status(400).json({ message: 'Search query is required' });
+        if (typeof search !== 'string' || !search) {
+            Logging.warn('Search query is missing or not a string');
+            return res.status(400).json({ message: 'Search query is required and must be a string' });
         }
-
         try {
-            const suggest = await getSuggestions(query);
+            const suggest = await getSuggestions(search);
             Logging.info('Location suggestions fetched successfully');
             res.status(200).json(suggest);
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-            Logging.error(`Error fetching location suggestions: ${errorMessage}`);
+            Logging.error(`Error fetching location suggestions for query "${search}": ${errorMessage}`);
             res.status(500).json({ message: 'Error fetching location suggestions', error: errorMessage });
         }
     }

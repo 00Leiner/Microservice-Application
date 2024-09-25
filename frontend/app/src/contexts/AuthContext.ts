@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import UserService from '../services/user/user';
+import UserService from '../services/auth_service/user/user';
 
 interface User {
   _id: string;

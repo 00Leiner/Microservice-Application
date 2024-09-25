@@ -3,15 +3,16 @@ import { locationController } from '../controllers/locationController';
 import { validateLocationInput } from '../middleware/validateLocationInput';
 import { asyncHandler } from '../middleware/errorHandler';
 import { ensureUser } from '../middleware/userMiddleware';
+import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
 
 // middleware
 router.use('/:userId', ensureUser);
-router.get('/:userId', asyncHandler(locationController.getSavedLocations));
-router.get('/:userId/:locationId', asyncHandler(locationController.getSavedLocationById));
-router.post('/:userId/add', validateLocationInput, asyncHandler(locationController.addSavedLocation));
-router.put('/:userId/:locationId', validateLocationInput, asyncHandler(locationController.updateSavedLocation));
-router.delete('/:userId/:locationId', asyncHandler(locationController.removeSavedLocation));
+router.get('/:userId', authMiddleware, asyncHandler(locationController.getSavedLocations));
+router.get('/:userId/:locationId', authMiddleware, asyncHandler(locationController.getSavedLocationById));
+router.post('/:userId/add', authMiddleware, validateLocationInput, asyncHandler(locationController.addSavedLocation));
+router.put('/:userId/:locationId', authMiddleware, validateLocationInput, asyncHandler(locationController.updateSavedLocation));
+router.delete('/:userId/:locationId', authMiddleware, asyncHandler(locationController.removeSavedLocation));
 
 export default router;

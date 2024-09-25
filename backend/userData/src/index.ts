@@ -25,8 +25,8 @@ const startServer = () => {
 
 	// Routes
 	Logging.info('Setting up routes...');
-	app.use('/userData/locations', authMiddleware, locationRoutes);  //app.use('/userData/locations', authMiddleware, locationRoutes);
-	app.use('/weather', authMiddleware, weatherRoutes);
+	app.use('/api/userData/locations', locationRoutes); 
+	app.use('/api/weather', weatherRoutes);
 
 	// Error handling middleware
 	app.use(errorHandler);

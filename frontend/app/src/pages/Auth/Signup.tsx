@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
-import AuthService from '../../services/auth/auth';
+import AuthService from '../../services/auth_service/auth/auth';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/Auth.css';
 
@@ -17,12 +17,6 @@ const Signup: React.FC = () => {
   const { login } = useAuth();
   const location = useLocation();
 
-  useEffect(() => {
-    const googleCredential = location.state?.googleCredential;
-    if (googleCredential) {
-      handleGoogleSignup(googleCredential);
-    }
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserService from '../../services/user/user';
+import UserService from '../../services/auth_service/user/user';
 import { useAuth } from '../../contexts/AuthContext';
 import ConfirmationDialog from '../../components/ConfirmationDialog';
 import '../../styles/Profile.css';
