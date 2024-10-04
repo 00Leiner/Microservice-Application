@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useRef } from 'react'; 
 import '../../styles/Dashboard.css';
 import infoService from '../../services/weather_service/info/info';
 
 const Dashboard: React.FC = () => {
   const [location, setLocation] = useState(''); 
   const [suggestions, setSuggestions] = useState<string[]>([]); 
+  const [showSuggestions, setShowSuggestions] = useState(false); 
+  const suggestionsRef = useRef<HTMLUListElement>(null); 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocation(e.target.value);
     fetchSuggestions(e.target.value);
+    setShowSuggestions(true);
   };
 
   const fetchSuggestions = async (search: string) => {
@@ -17,7 +20,7 @@ const Dashboard: React.FC = () => {
         const data = await infoService.getSuggestions(search); 
         const suggestions = data.map((item: any) => ({
           name: item.name,
-          localNames: item.local_names, // This is an object
+          localNames: item.local_names, 
           country: item.country,
         }));
         setSuggestions(suggestions); 
@@ -29,6 +32,19 @@ const Dashboard: React.FC = () => {
       setSuggestions([]); 
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false); 
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="dashboard-page">
@@ -44,11 +60,12 @@ const Dashboard: React.FC = () => {
             />
             <button className="search-button"><i className="fa fa-search"></i></button>
           </div>
-          {suggestions.length > 0 && ( 
-            <ul className="suggestions-list"> 
+
+          {showSuggestions && suggestions.length > 0 && ( 
+            <ul className="suggestions-list" ref={suggestionsRef}> 
               {suggestions.map((suggestion: any, index) => (
                 <li key={index} className="suggestion-item">
-                  {suggestion.name} ({suggestion.country})
+                  <i className="fa fa-search light-grey-icon"></i> {suggestion.name} ({suggestion.country})
                 </li>
               ))}
             </ul>

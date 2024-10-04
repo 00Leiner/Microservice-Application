@@ -5,7 +5,12 @@
 }
 
 .dashboard-content {
-  padding: 20px;
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  flex-direction: column; 
+  width: 100%; 
+  padding: 20px; 
   max-width: 1000px;
   margin: 0 auto;
   width: 100%;
@@ -13,22 +18,29 @@
 
 .search-container {
   display: flex;
-  margin-bottom: 20px;
   flex-direction: column; 
+  width: 100%; 
+  max-width: 400px; 
   position: relative; 
   border: 1px solid #2e2e2e; 
   border-radius: 20px; 
   padding: 5px; 
+  width: 50%; 
+  justify-content: space-between;
 }
 
-.search{
-  position: relative; 
+.search {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .location-input {
-  flex-grow: 1;
-  padding: 15px; 
-  font-size: 16px;
+  flex: 1;
+  padding: 10px; 
+  font-size: 14px;
+  margin-right: 0;
+  border-radius: 5px 0 0 5px;
   z-index: 1; 
   border: none; 
   background-color: transparent; 
@@ -42,10 +54,12 @@
 }
 
 .search-button {
-  padding: 10px 20px;
-  color: rgb(77, 77, 77);
+  padding: 10px 15px;
+  color: rgb(106, 106, 106);
   font-size: 16px;
+  border-radius: 5px;
   border: none; 
+  cursor: pointer;
 }
 
 .search-button:hover {
@@ -53,34 +67,28 @@
 }
 
 .suggestions-list {
-  list-style-type: none;
-  padding: 0; 
-  margin: 0; 
-  border: 1px solid #ccc; 
-  border-radius: 4px; 
-  background-color: white; 
-  position: absolute; 
-  z-index: 1000; 
-  width: calc(100% - 20px);
+  list-style-type: none; 
+  padding: 0;
+  margin: 5px 0 0 0;
+  border: transparent;
+  border-radius: 5px;
+  background-color: transparent; 
+  width: 100%; 
   max-height: 200px; 
   overflow-y: auto; 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); 
-  margin-top: 5px; 
+  z-index: 1000;
 }
 
 .suggestion-item {
   padding: 10px; 
   cursor: pointer; 
   transition: background-color 0.3s, color 0.3s;
-  background-color: #fff; 
-  border-bottom: 1px solid #e0e0e0;
+  background-color: transparent; 
+  color: rgb(106, 106, 106);
 }
 
-.suggestion-item:last-child {
-  border-bottom: none;
-}
 
 .suggestion-item:hover {
-  background-color: #e0f7fa; 
-  color: #00796b;
+  background-color: #f0f0f0; 
+  color: #373737;
 }
